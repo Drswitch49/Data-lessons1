@@ -1,0 +1,1599 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd 
+base_url = "https://www.airlinequality.com/airline-reviews/british-airways"
+pages = 10
+page_size = 100
+
+reviews= []
+base_url = "https://www.airlinequality.com/airline-reviews/british-airways"
+pages = 10
+page_size = 100
+
+reviews = []
+
+# for i in range(1, pages + 1):
+for i in range(1, pages + 1):
+
+    print(f"Scraping page {i}")
+
+    # Create URL to collect links from paginated data
+    url = f"{base_url}/page/{i}/?sortby=post_date%3ADesc&pagesize={page_size}"
+
+    # Collect HTML data from this page
+    response = requests.get(url)
+
+    # Parse content
+    content = response.content
+    parsed_content = BeautifulSoup(content, 'html.parser')
+    for para in parsed_content.find_all("div", {"class": "text_content"}):
+        reviews.append(para.get_text())
+    
+    print(f"   ---> {len(reviews)} total reviews")
+Scraping page 1
+   ---> 100 total reviews
+Scraping page 2
+   ---> 200 total reviews
+Scraping page 3
+   ---> 300 total reviews
+Scraping page 4
+   ---> 400 total reviews
+Scraping page 5
+   ---> 500 total reviews
+Scraping page 6
+   ---> 600 total reviews
+Scraping page 7
+   ---> 700 total reviews
+Scraping page 8
+   ---> 800 total reviews
+Scraping page 9
+   ---> 900 total reviews
+Scraping page 10
+   ---> 1000 total reviews
+df.to_csv("data/BA_reviews.csv")
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[4], line 1
+----> 1 df.to_csv("data/BA_reviews.csv")
+
+NameError: name 'df' is not defined
+df = pd.DataFrame()
+df["reviews"] = reviews
+df.head()
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[1], line 1
+----> 1 df = pd.DataFrame()
+      2 df["reviews"] = reviews
+      3 df.head()
+
+NameError: name 'pd' is not defined
+df.to_csv("data/BA_reviews.csv")
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[2], line 1
+----> 1 df.to_csv("data/BA_reviews.csv")
+
+NameError: name 'df' is not defined
+import pandas as pd 
+Df = pd.read_csv("/Users/ayodejioyesanya/Desktop/BA_reviews_20231121_123616.csv")
+Df
+docs = df.reviews.tolist()
+docs [0]
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[3], line 4
+      2 Df = pd.read_csv("/Users/ayodejioyesanya/Desktop/BA_reviews_20231121_123616.csv")
+      3 Df
+----> 4 docs = df.reviews.tolist()
+      5 docs [0]
+
+NameError: name 'df' is not defined
+import pandas as pd 
+Df = pd.read_csv("/Users/ayodejioyesanya/Desktop/BA_reviews_20231121_123616.csv")
+Df
+docs = Df.reviews.tolist()
+docs [0]
+'✅ Trip Verified |  4 Hours before takeoff we received a Mail stating a cryptic message that there are disruptions to be expected as there is a limit on how many planes can leave at the same time. So did the capacity of the Heathrow Airport really hit British Airways by surprise, 4h before departure? Anyhow - we took the one hour delay so what - but then we have been forced to check in our Hand luggage. I travel only with hand luggage to avoid waiting for the ultra slow processing of the checked in luggage. Overall 2h later at home than planed, with really no reason, just due to incompetent people. Service level far worse then Ryanair and triple the price. Really never again. Thanks for nothing.'
+df = pd.read_csv("data/BA_reviews.csv")
+print(df.head())
+df['reviews'] = df['reviews'].str.replace('✅ Trip Verified', '')
+print(df.head())
+df.to_csv("data/cleaned_BA_reviews.csv", index=False)
+---------------------------------------------------------------------------
+FileNotFoundError                         Traceback (most recent call last)
+Cell In[5], line 1
+----> 1 df = pd.read_csv("data/BA_reviews.csv")
+      2 print(df.head())
+      3 df['reviews'] = df['reviews'].str.replace('✅ Trip Verified', '')
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/io/parsers/readers.py:948, in read_csv(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, date_format, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options, dtype_backend)
+    935 kwds_defaults = _refine_defaults_read(
+    936     dialect,
+    937     delimiter,
+   (...)
+    944     dtype_backend=dtype_backend,
+    945 )
+    946 kwds.update(kwds_defaults)
+--> 948 return _read(filepath_or_buffer, kwds)
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/io/parsers/readers.py:611, in _read(filepath_or_buffer, kwds)
+    608 _validate_names(kwds.get("names", None))
+    610 # Create the parser.
+--> 611 parser = TextFileReader(filepath_or_buffer, **kwds)
+    613 if chunksize or iterator:
+    614     return parser
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/io/parsers/readers.py:1448, in TextFileReader.__init__(self, f, engine, **kwds)
+   1445     self.options["has_index_names"] = kwds["has_index_names"]
+   1447 self.handles: IOHandles | None = None
+-> 1448 self._engine = self._make_engine(f, self.engine)
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/io/parsers/readers.py:1705, in TextFileReader._make_engine(self, f, engine)
+   1703     if "b" not in mode:
+   1704         mode += "b"
+-> 1705 self.handles = get_handle(
+   1706     f,
+   1707     mode,
+   1708     encoding=self.options.get("encoding", None),
+   1709     compression=self.options.get("compression", None),
+   1710     memory_map=self.options.get("memory_map", False),
+   1711     is_text=is_text,
+   1712     errors=self.options.get("encoding_errors", "strict"),
+   1713     storage_options=self.options.get("storage_options", None),
+   1714 )
+   1715 assert self.handles is not None
+   1716 f = self.handles.handle
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/io/common.py:863, in get_handle(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)
+    858 elif isinstance(handle, str):
+    859     # Check whether the filename is to be opened in binary mode.
+    860     # Binary mode does not support 'encoding' and 'newline'.
+    861     if ioargs.encoding and "b" not in ioargs.mode:
+    862         # Encoding
+--> 863         handle = open(
+    864             handle,
+    865             ioargs.mode,
+    866             encoding=ioargs.encoding,
+    867             errors=errors,
+    868             newline="",
+    869         )
+    870     else:
+    871         # Binary mode
+    872         handle = open(handle, ioargs.mode)
+
+FileNotFoundError: [Errno 2] No such file or directory: 'data/BA_reviews.csv'
+df = pd.read_csv(""/Users/ayodejioyesanya/Desktop/BA_reviews_20231121_123616.csv")
+print(df.head())
+df['reviews'] = df['reviews'].str.replace('✅ Trip Verified', '')
+print(df.head())
+df.to_csv("data/cleaned_BA_reviews_20231121_123616.csv", index=False)
+  Cell In[6], line 1
+    df = pd.read_csv(""/Users/ayodejioyesanya/Desktop/BA_reviews_20231121_123616.csv")
+                                                                                    ^
+SyntaxError: unterminated string literal (detected at line 1)
+df = pd.read_csv("/Users/ayodejioyesanya/Desktop/BA_reviews_20231121_123616.csv")
+print(df.head())
+df['reviews'] = df['reviews'].str.replace('✅ Trip Verified', '')
+print(df.head())
+df.to_csv("data/cleaned_BA_reviews_20231121_123616.csv", index=False)
+   Unnamed: 0                                            reviews
+0           0  ✅ Trip Verified |  4 Hours before takeoff we r...
+1           1  ✅ Trip Verified |  I recently had a delay on B...
+2           2  Not Verified |  Boarded on time, but it took a...
+3           3  ✅ Trip Verified |  5 days before the flight, w...
+4           4  Not Verified |  \r\nWe traveled to Lisbon for ...
+   Unnamed: 0                                            reviews
+0           0   |  4 Hours before takeoff we received a Mail ...
+1           1   |  I recently had a delay on British Airways ...
+2           2  Not Verified |  Boarded on time, but it took a...
+3           3   |  5 days before the flight, we were advised ...
+4           4  Not Verified |  \r\nWe traveled to Lisbon for ...
+---------------------------------------------------------------------------
+OSError                                   Traceback (most recent call last)
+Cell In[7], line 5
+      3 df['reviews'] = df['reviews'].str.replace('✅ Trip Verified', '')
+      4 print(df.head())
+----> 5 df.to_csv("data/cleaned_BA_reviews_20231121_123616.csv", index=False)
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/core/generic.py:3902, in NDFrame.to_csv(self, path_or_buf, sep, na_rep, float_format, columns, header, index, index_label, mode, encoding, compression, quoting, quotechar, lineterminator, chunksize, date_format, doublequote, escapechar, decimal, errors, storage_options)
+   3891 df = self if isinstance(self, ABCDataFrame) else self.to_frame()
+   3893 formatter = DataFrameFormatter(
+   3894     frame=df,
+   3895     header=header,
+   (...)
+   3899     decimal=decimal,
+   3900 )
+-> 3902 return DataFrameRenderer(formatter).to_csv(
+   3903     path_or_buf,
+   3904     lineterminator=lineterminator,
+   3905     sep=sep,
+   3906     encoding=encoding,
+   3907     errors=errors,
+   3908     compression=compression,
+   3909     quoting=quoting,
+   3910     columns=columns,
+   3911     index_label=index_label,
+   3912     mode=mode,
+   3913     chunksize=chunksize,
+   3914     quotechar=quotechar,
+   3915     date_format=date_format,
+   3916     doublequote=doublequote,
+   3917     escapechar=escapechar,
+   3918     storage_options=storage_options,
+   3919 )
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/io/formats/format.py:1152, in DataFrameRenderer.to_csv(self, path_or_buf, encoding, sep, columns, index_label, mode, compression, quoting, quotechar, lineterminator, chunksize, date_format, doublequote, escapechar, errors, storage_options)
+   1131     created_buffer = False
+   1133 csv_formatter = CSVFormatter(
+   1134     path_or_buf=path_or_buf,
+   1135     lineterminator=lineterminator,
+   (...)
+   1150     formatter=self.fmt,
+   1151 )
+-> 1152 csv_formatter.save()
+   1154 if created_buffer:
+   1155     assert isinstance(path_or_buf, StringIO)
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/io/formats/csvs.py:247, in CSVFormatter.save(self)
+    243 """
+    244 Create the writer & save.
+    245 """
+    246 # apply compression and byte/text conversion
+--> 247 with get_handle(
+    248     self.filepath_or_buffer,
+    249     self.mode,
+    250     encoding=self.encoding,
+    251     errors=self.errors,
+    252     compression=self.compression,
+    253     storage_options=self.storage_options,
+    254 ) as handles:
+    255     # Note: self.encoding is irrelevant here
+    256     self.writer = csvlib.writer(
+    257         handles.handle,
+    258         lineterminator=self.lineterminator,
+   (...)
+    263         quotechar=self.quotechar,
+    264     )
+    266     self._save()
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/io/common.py:739, in get_handle(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)
+    737 # Only for write methods
+    738 if "r" not in mode and is_path:
+--> 739     check_parent_directory(str(handle))
+    741 if compression:
+    742     if compression != "zstd":
+    743         # compression libraries do not like an explicit text-mode
+
+File ~/anaconda3/lib/python3.10/site-packages/pandas/io/common.py:604, in check_parent_directory(path)
+    602 parent = Path(path).parent
+    603 if not parent.is_dir():
+--> 604     raise OSError(rf"Cannot save file into a non-existent directory: '{parent}'")
+
+OSError: Cannot save file into a non-existent directory: 'data'
+df.to_csv("/Users/ayodejioyesanya/Desktop/cleaned_BA_reviews_20231121_123616.csv", index=False)
+import pandas as pd 
+Df = pd.read_csv("/Users/ayodejioyesanya/Desktop/BA_reviews_20231121_123616.csv")
+Df
+docs = Df.reviews.tolist()
+docs [0]
+import pandas as pd 
+Df = pd.read_csv("/Users/ayodejioyesanya/Desktop/cleaned_BA_reviews_20231121_123616.csv")
+Df
+docs = Df.reviews.tolist()
+docs [0]
+' |  4 Hours before takeoff we received a Mail stating a cryptic message that there are disruptions to be expected as there is a limit on how many planes can leave at the same time. So did the capacity of the Heathrow Airport really hit British Airways by surprise, 4h before departure? Anyhow - we took the one hour delay so what - but then we have been forced to check in our Hand luggage. I travel only with hand luggage to avoid waiting for the ultra slow processing of the checked in luggage. Overall 2h later at home than planed, with really no reason, just due to incompetent people. Service level far worse then Ryanair and triple the price. Really never again. Thanks for nothing.'
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.manifold import TSNE
+from umap import UMAP
+from wordcloud import WordCloud
+from nltk.sentiment import SentimentIntensityAnalyzer
+# Assuming you have a function 'use_embed' for USE embeddings
+# import tensorflow_hub as hub
+
+# Function to perform clustering
+def perform_clustering(embeddings, n_clusters=3):
+    kmeans = KMeans(n_clusters=n_clusters, n_init=10, random_state=42)
+    cluster_labels = kmeans.fit_predict(embeddings)
+    return cluster_labels
+
+# Function to extract keywords using TF-IDF
+def extract_keywords(reviews, n_keywords=10):
+    vectorizer = TfidfVectorizer(max_features=n_keywords)
+    tfidf_matrix = vectorizer.fit_transform(reviews)
+    feature_names = vectorizer.get_feature_names_out()
+    return pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
+
+# Function to perform topic modeling using LDA
+def perform_topic_modeling(reviews, n_topics=5):
+    vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
+    tfidf_matrix = vectorizer.fit_transform(reviews)
+
+    lda = LatentDirichletAllocation(n_components=n_topics, random_state=42)
+    lda.fit(tfidf_matrix)
+
+    return lda, vectorizer
+
+# Function to visualize word cloud
+def visualize_word_cloud(text, title):
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title(title)
+    plt.show()
+
+# Function to perform sentiment analysis using VADER
+def perform_sentiment_analysis(reviews):
+    analyzer = SentimentIntensityAnalyzer()
+    sentiments = [analyzer.polarity_scores(review)['compound'] for review in reviews]
+    return sentiments
+
+# Function to visualize t-SNE
+def visualize_tsne(embeddings, labels):
+    tsne = TSNE(n_components=2, perplexity=5, random_state=42, n_jobs=1)  # Adjusted perplexity value and set n_jobs explicitly
+    tsne_result = tsne.fit_transform(embeddings)
+
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette="viridis")
+    plt.title('t-SNE Visualization')
+    plt.show()
+
+# Function to perform UMAP dimensionality reduction
+def visualize_umap(embeddings, labels):
+    umap_result = UMAP(n_neighbors=5, min_dist=0.3, random_state=42, n_jobs=1).fit_transform(embeddings)  # Set n_jobs explicitly
+
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x=umap_result[:, 0], y=umap_result[:, 1], hue=labels, palette="viridis")
+    plt.title('UMAP Visualization')
+    plt.show()
+
+# Example British Airways reviews
+reviews = [
+    "London to Gothenburg. BA are getting a lot of bad press - deservedly so at present with strikes, IT glitches, baggage problems...",
+    "London Heathrow to Inverness. Having previously written a review about the shockingly appalling experience with BA so far this summer...",
+    "Heathrow to Glasgow. Again flight is delayed. It’s easier to use the train than fly with BA the staff don’t even get embarrassed anymore...",
+    "I was flying BA to Delhi in economy because my original flight with Swissair was cancelled. The 777 aircraft is looking old, the economy class seat is small and fairly cramped...",
+    "BA 2616 and 2617 return trip from Gatwick to Cagliari. Both flights on a Saturday and were full. Aircraft was an A320-200 on both legs...",
+    "The flight was delayed but the crew was helpful."
+]
+
+# Assuming 'review_embeddings' is the result of USE embeddings
+# Use your actual embedding function or method
+# import tensorflow as tf
+# use_embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+# review_embeddings = use_embed(reviews).numpy()
+
+# Visualize t-SNE with modified perplexity
+visualize_tsne(review_embeddings, labels=reviews)
+
+# Perform clustering
+cluster_labels = perform_clustering(review_embeddings, n_clusters=3)
+
+# Visualize UMAP
+visualize_umap(review_embeddings, labels=cluster_labels)
+
+# Extract keywords using TF-IDF
+keywords_df = extract_keywords(reviews, n_keywords=10)
+print("Top Keywords:")
+print(keywords_df)
+
+# Perform topic modeling using LDA
+lda_model, vectorizer = perform_topic_modeling(reviews)
+print("Top Words in Topics:")
+for i, topic in enumerate(lda_model.components_):
+    top_words_idx = topic.argsort()[-5:][::-1]
+    top_words = [vectorizer.get_feature_names_out()[idx] for idx in top_words_idx]
+
+    print(f"Topic {i}: {', '.join(top_words)}")
+# Function to perform clustering
+def perform_clustering(embeddings, n_clusters=3):
+    kmeans = KMeans(n_clusters=n_clusters, n_init=10, random_state=42)
+    cluster_labels = kmeans.fit_predict(embeddings)
+    return cluster_labels
+import tensorflow_hub as hub
+use_embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+review_embeddings = use_embed(reviews).numpy()
+# ... (previous code)
+
+# Function to perform topic modeling using LDA
+def perform_topic_modeling(reviews, n_topics=5):
+    vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
+    tfidf_matrix = vectorizer.fit_transform(reviews)
+
+    lda = LatentDirichletAllocation(n_components=n_topics, random_state=42)
+    lda.fit(tfidf_matrix)
+
+    return lda, vectorizer
+
+# Function to visualize word cloud
+def visualize_word_cloud(text, title):
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title(title)
+    plt.show()
+
+# Function to perform sentiment analysis using VADER
+def perform_sentiment_analysis(reviews):
+    analyzer = SentimentIntensityAnalyzer()
+    sentiments = [analyzer.polarity_scores(review)['compound'] for review in reviews]
+    return sentiments
+
+# Function to visualize t-SNE
+def visualize_tsne(embeddings, labels):
+    tsne = TSNE(n_components=2, perplexity=5, random_state=42, n_jobs=1)  # Adjusted perplexity value and set n_jobs explicitly
+    tsne_result = tsne.fit_transform(embeddings)
+
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette="viridis")
+    plt.title('t-SNE Visualization')
+    plt.show()
+
+# Function to perform UMAP dimensionality reduction
+def visualize_umap(embeddings, labels):
+    umap_result = UMAP(n_neighbors=5, min_dist=0.3, random_state=42, n_jobs=1).fit_transform(embeddings)  # Set n_jobs explicitly
+
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x=umap_result[:, 0], y=umap_result[:, 1], hue=labels, palette="viridis")
+    plt.title('UMAP Visualization')
+    plt.show()
+
+# Example British Airways reviews
+reviews = [
+    "London to Gothenburg. BA are getting a lot of bad press - deservedly so at present with strikes, IT glitches, baggage problems...",
+    "London Heathrow to Inverness. Having previously written a review about the shockingly appalling experience with BA so far this summer...",
+    "Heathrow to Glasgow. Again flight is delayed. It’s easier to use the train than fly with BA the staff don’t even get embarrassed anymore...",
+    "I was flying BA to Delhi in economy because my original flight with Swissair was cancelled. The 777 aircraft is looking old, the economy class seat is small and fairly cramped...",
+    "BA 2616 and 2617 return trip from Gatwick to Cagliari. Both flights on a Saturday and were full. Aircraft was an A320-200 on both legs...",
+    "The flight was delayed but the crew was helpful."
+]
+
+# Assuming 'review_embeddings' is the result of USE embeddings
+# Use your actual embedding function or method
+# import tensorflow as tf
+# use_embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+# review_embeddings = use_embed(reviews).numpy()
+
+# Visualize t-SNE with modified perplexity
+visualize_tsne(review_embeddings, labels=reviews)
+
+# Perform clustering
+cluster_labels = perform_clustering(review_embeddings, n_clusters=3)
+
+# Visualize UMAP
+visualize_umap(review_embeddings, labels=cluster_labels)
+
+# Extract keywords using TF-IDF
+keywords_df = extract_keywords(reviews, n_keywords=10)
+print("Top Keywords:")
+print(keywords_df)
+
+# Perform topic modeling using LDA
+lda_model, vectorizer = perform_topic_modeling(reviews)
+print("Top Words in Topics:")
+for i, topic in enumerate(lda_model.components_):
+    top_words_idx = topic.argsort()[-5:][::-1]
+    top_words = [vectorizer.get_feature_names_out()[idx] for idx in top_words_idx]
+
+    print(f"Topic {i}: {', '.join(top_words)}")
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[2], line 65
+     49 reviews = [
+     50     "London to Gothenburg. BA are getting a lot of bad press - deservedly so at present with strikes, IT glitches, baggage problems...",
+     51     "London Heathrow to Inverness. Having previously written a review about the shockingly appalling experience with BA so far this summer...",
+   (...)
+     55     "The flight was delayed but the crew was helpful."
+     56 ]
+     58 # Assuming 'review_embeddings' is the result of USE embeddings
+     59 # Use your actual embedding function or method
+     60 # import tensorflow as tf
+   (...)
+     63 
+     64 # Visualize t-SNE with modified perplexity
+---> 65 visualize_tsne(review_embeddings, labels=reviews)
+     67 # Perform clustering
+     68 cluster_labels = perform_clustering(review_embeddings, n_clusters=3)
+
+NameError: name 'review_embeddings' is not defined
+# Assuming 'review_embeddings' is the result of USE embeddings
+# Use your actual embedding function or method
+import tensorflow as tf
+import tensorflow_hub as hub
+
+# Assuming 'use_embed' is your embedding function or model
+use_embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+review_embeddings = use_embed(reviews).numpy()
+
+# Visualize t-SNE with modified perplexity
+visualize_tsne(review_embeddings, labels=reviews)
+
+# Perform clustering
+cluster_labels = perform_clustering(review_embeddings, n_clusters=3)
+
+# Visualize UMAP
+visualize_umap(review_embeddings, labels=cluster_labels)
+
+# Extract keywords using TF-IDF
+keywords_df = extract_keywords(reviews, n_keywords=10)
+print("Top Keywords:")
+print(keywords_df)
+
+# Perform topic modeling using LDA
+lda_model, vectorizer = perform_topic_modeling(reviews)
+print("Top Words in Topics:")
+for i, topic in enumerate(lda_model.components_):
+    top_words_idx = topic.argsort()[-5:][::-1]
+    top_words = [vectorizer.get_feature_names_out()[idx] for idx in top_words_idx]
+
+    print(f"Topic {i}: {', '.join(top_words)}")
+pip install seaborn
+Requirement already satisfied: seaborn in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (0.13.0)
+Requirement already satisfied: numpy!=1.24.0,>=1.20 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from seaborn) (1.26.0)
+Requirement already satisfied: matplotlib!=3.6.1,>=3.3 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from seaborn) (3.8.1)
+Requirement already satisfied: pandas>=1.2 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from seaborn) (2.1.3)
+Requirement already satisfied: packaging>=20.0 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (23.1)
+Requirement already satisfied: pyparsing>=2.3.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (3.1.1)
+Requirement already satisfied: python-dateutil>=2.7 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (2.8.2)
+Requirement already satisfied: kiwisolver>=1.3.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (1.4.5)
+Requirement already satisfied: contourpy>=1.0.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (1.2.0)
+Requirement already satisfied: pillow>=8 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (10.0.1)
+Requirement already satisfied: cycler>=0.10 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (0.12.1)
+Requirement already satisfied: fonttools>=4.22.0 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (4.44.0)
+Requirement already satisfied: tzdata>=2022.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from pandas>=1.2->seaborn) (2023.3)
+Requirement already satisfied: pytz>=2020.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from pandas>=1.2->seaborn) (2023.3.post1)
+Requirement already satisfied: six>=1.5 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from python-dateutil>=2.7->matplotlib!=3.6.1,>=3.3->seaborn) (1.16.0)
+Note: you may need to restart the kernel to use updated packages.
+pip install seaborn
+Requirement already satisfied: seaborn in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (0.13.0)
+Requirement already satisfied: pandas>=1.2 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from seaborn) (2.1.3)
+Requirement already satisfied: numpy!=1.24.0,>=1.20 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from seaborn) (1.26.0)
+Requirement already satisfied: matplotlib!=3.6.1,>=3.3 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from seaborn) (3.8.1)
+Requirement already satisfied: pillow>=8 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (10.0.1)
+Requirement already satisfied: python-dateutil>=2.7 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (2.8.2)
+Requirement already satisfied: cycler>=0.10 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (0.12.1)
+Requirement already satisfied: kiwisolver>=1.3.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (1.4.5)
+Requirement already satisfied: fonttools>=4.22.0 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (4.44.0)
+Requirement already satisfied: pyparsing>=2.3.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (3.1.1)
+Requirement already satisfied: contourpy>=1.0.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (1.2.0)
+Requirement already satisfied: packaging>=20.0 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from matplotlib!=3.6.1,>=3.3->seaborn) (23.1)
+Requirement already satisfied: pytz>=2020.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from pandas>=1.2->seaborn) (2023.3.post1)
+Requirement already satisfied: tzdata>=2022.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from pandas>=1.2->seaborn) (2023.3)
+Requirement already satisfied: six>=1.5 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from python-dateutil>=2.7->matplotlib!=3.6.1,>=3.3->seaborn) (1.16.0)
+Note: you may need to restart the kernel to use updated packages.
+import seaborn as sns
+# Function to perform clustering
+def perform_clustering(embeddings, n_clusters=3):
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    cluster_labels = kmeans.fit_predict(embeddings)
+    return cluster_labels
+#reads a CSV file into a pandas DataFrame, displays the DataFrame, extracts the 'reviews' column as a list, and then prints the first element of that list
+import pandas as pd 
+Df = pd.read_csv("/Users/ayodejioyesanya/Desktop/cleaned_BA_reviews_20231121_123616.csv")
+Df
+docs = Df.reviews.tolist()
+docs [0]
+' |  4 Hours before takeoff we received a Mail stating a cryptic message that there are disruptions to be expected as there is a limit on how many planes can leave at the same time. So did the capacity of the Heathrow Airport really hit British Airways by surprise, 4h before departure? Anyhow - we took the one hour delay so what - but then we have been forced to check in our Hand luggage. I travel only with hand luggage to avoid waiting for the ultra slow processing of the checked in luggage. Overall 2h later at home than planed, with really no reason, just due to incompetent people. Service level far worse then Ryanair and triple the price. Really never again. Thanks for nothing.'
+# Function to extract keywords using TF-IDF
+def extract_keywords(reviews, n_keywords=10):
+    vectorizer = TfidfVectorizer(max_features=n_keywords)
+    tfidf_matrix = vectorizer.fit_transform(reviews)
+    feature_names = vectorizer.get_feature_names_out()
+    return pd.DataFrame(tfidf_matrix.toarray(), columns=feature_names)
+
+# Function to perform topic modeling using LDA
+def perform_topic_modeling(reviews, n_topics=5):
+    vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
+    tfidf_matrix = vectorizer.fit_transform(reviews)
+
+    lda = LatentDirichletAllocation(n_components=n_topics, random_state=42)
+    lda.fit(tfidf_matrix)
+
+    return lda, vectorizer
+
+# Function to visualize word cloud
+def visualize_word_cloud(text, title):
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.title(title)
+    plt.show()
+
+# Function to perform sentiment analysis using VADER
+def perform_sentiment_analysis(reviews):
+    analyzer = SentimentIntensityAnalyzer()
+    sentiments = [analyzer.polarity_scores(review)['compound'] for review in reviews]
+    return sentiments
+
+# Function to visualize t-SNE
+def visualize_tsne(embeddings, labels):
+    tsne = TSNE(n_components=2, perplexity=5, random_state=42, n_jobs=1)
+    tsne_result = tsne.fit_transform(embeddings)
+
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x=tsne_result[:, 0], y=tsne_result[:, 1], hue=labels, palette="viridis")
+    plt.title('t-SNE Visualization')
+    plt.show()
+
+# Function to perform UMAP dimensionality reduction
+def visualize_umap(embeddings, labels):
+    umap_result = UMAP(n_neighbors=5, min_dist=0.3, random_state=42, n_jobs=1).fit_transform(embeddings)
+
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x=umap_result[:, 0], y=umap_result[:, 1], hue=labels, palette="viridis")
+    plt.title('UMAP Visualization')
+    plt.show()
+
+# Example British Airways reviews
+reviews = [
+    "London to Gothenburg. BA are getting a lot of bad press - deservedly so at present with strikes, IT glitches, baggage problems...",
+    "London Heathrow to Inverness. Having previously written a review about the shockingly appalling experience with BA so far this summer...",
+    "Heathrow to Glasgow. Again flight is delayed. It’s easier to use the train than fly with BA the staff don’t even get embarrassed anymore...",
+    "I was flying BA to Delhi in economy because my original flight with Swissair was cancelled. The 777 aircraft is looking old, the economy class seat is small and fairly cramped...",
+    "BA 2616 and 2617 return trip from Gatwick to Cagliari. Both flights on a Saturday and were full. Aircraft was an A320-200 on both legs...",
+    "The flight was delayed but the crew was helpful."
+]
+
+# Load pre-trained USE model
+use_embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+
+# Get USE embeddings for reviews
+review_embeddings = use_embed(reviews).numpy()
+
+# Visualize t-SNE with modified perplexity
+visualize_tsne(review_embeddings, labels=reviews)
+
+# Perform clustering
+cluster_labels = perform_clustering(review_embeddings, n_clusters=3)
+
+# Visualize UMAP
+visualize_umap(review_embeddings, labels=cluster_labels)
+
+# Extract keywords using TF-IDF
+keywords_df = extract_keywords(reviews, n_keywords=10)
+print("Top Keywords:")
+print(keywords_df)
+
+# Perform topic modeling using LDA
+lda_model, vectorizer = perform_topic_modeling(reviews)
+print("Top Words in Topics:")
+for i, topic in enumerate(lda_model.components_):
+    top_words_idx = topic.argsort()[-5:][::-1]
+    top_words = [vectorizer.get_feature_names_out()[idx] for idx in top_words_idx]
+    print(f"Topic {i}: {', '.join(top_words)}")
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import tensorflow as tf
+import tensorflow_hub as hub
+from sklearn.cluster import KMeans
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.manifold import TSNE
+from umap import UMAP
+from wordcloud import WordCloud
+from nltk.sentiment import SentimentIntensityAnalyzer
+# Function to perform clustering
+def perform_clustering(embeddings, n_clusters=3):
+    kmeans = KMeans(n_clusters=n_clusters, n_init=10, random_state=42)
+    cluster_labels = kmeans.fit_predict(embeddings)
+    return cluster_labels
+pip install --user -U nltk
+Requirement already satisfied: nltk in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (3.8.1)
+Requirement already satisfied: joblib in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from nltk) (1.3.2)
+Requirement already satisfied: tqdm in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from nltk) (4.65.0)
+Requirement already satisfied: regex>=2021.8.3 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from nltk) (2023.10.3)
+Requirement already satisfied: click in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from nltk) (8.1.7)
+Note: you may need to restart the kernel to use updated packages.
+import pandas as pd
+from nltk.sentiment import SentimentIntensityAnalyzer
+import matplotlib.pyplot as plt
+import nltk
+print(nltk.data.path)
+['/Users/ayodejioyesanya/nltk_data', '/Users/ayodejioyesanya/anaconda3/nltk_data', '/Users/ayodejioyesanya/anaconda3/share/nltk_data', '/Users/ayodejioyesanya/anaconda3/lib/nltk_data', '/usr/share/nltk_data', '/usr/local/share/nltk_data', '/usr/lib/nltk_data', '/usr/local/lib/nltk_data']
+import nltk
+nltk.download('vader_lexicon')
+[nltk_data] Downloading package vader_lexicon to
+[nltk_data]     /Users/ayodejioyesanya/nltk_data...
+True
+# Load the scraped data into a pandas DataFrame
+df = pd.read_csv("/Users/ayodejioyesanya/Desktop/cleaned_BA_reviews_20231121_123616.csv")
+
+# Perform sentiment analysis
+analyzer = SentimentIntensityAnalyzer()
+df['sentiment_score'] = df['reviews'].apply(lambda x: analyzer.polarity_scores(x)['compound'])
+
+# Display sentiment distribution
+df['sentiment_score'].hist(bins=20)
+plt.title('Sentiment Distribution')
+plt.xlabel('Sentiment Score')
+plt.ylabel('Frequency')
+plt.show()
+
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+
+# Concatenate all reviews into a single string
+all_reviews = ' '.join(df['reviews'].astype(str))
+
+# Generate word cloud
+wordcloud = WordCloud(width=800, height=400, background_color='white').generate(all_reviews)
+
+# Display the word cloud
+plt.figure(figsize=(10, 5))
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis('off')
+plt.title('Word Cloud of Reviews')
+plt.show()
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import LatentDirichletAllocation
+
+# Example: Perform topic modeling using LDA
+vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
+tfidf_matrix = vectorizer.fit_transform(df['reviews'])
+
+lda = LatentDirichletAllocation(n_components=5, random_state=42)
+lda.fit(tfidf_matrix)
+
+# Display top words in each topic
+feature_names = vectorizer.get_feature_names_out()
+for i, topic in enumerate(lda.components_):
+    top_words_idx = topic.argsort()[-5:][::-1]
+    top_words = [feature_names[idx] for idx in top_words_idx]
+    print(f"Topic {i}: {', '.join(top_words)}")
+Topic 0: fco, valencia, alaska, wir, yo
+Topic 1: calgary, notified, redeem, test, lucia
+Topic 2: flight, ba, service, london, good
+Topic 3: berlin, zurich, bangalore, delightful, unexpected
+Topic 4: cityflyer, norwegian, test, zrh, santorini
+pip install gensim
+Requirement already satisfied: gensim in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (4.3.2)
+Requirement already satisfied: smart-open>=1.8.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from gensim) (6.4.0)
+Requirement already satisfied: numpy>=1.18.5 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from gensim) (1.26.0)
+Requirement already satisfied: scipy>=1.7.0 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from gensim) (1.11.4)
+Note: you may need to restart the kernel to use updated packages.
+# Tokenize the reviews (i.e. assuming each review is a string)
+tokenized_reviews = [review.split() for review in df['reviews']]
+
+# Train Word2Vec model
+w2v_model = Word2Vec(sentences=tokenized_reviews, vector_size=100, window=5, min_count=1, workers=4)
+
+# Visualize Word Embeddings using t-SNE
+words = list(w2v_model.wv.index_to_key)
+vectors = [w2v_model.wv[word] for word in words]
+
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors)
+
+tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+tsne_df['word'] = words
+
+# Visualize t-SNE
+plt.figure(figsize=(12, 8))
+sns.scatterplot(data=tsne_df, x='x', y='y', hue='word', palette='viridis', alpha=0.6)
+plt.title('t-SNE Visualization of Word Embeddings')
+plt.show()
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[11], line 5
+      2 tokenized_reviews = [review.split() for review in df['reviews']]
+      4 # Train Word2Vec model
+----> 5 w2v_model = Word2Vec(sentences=tokenized_reviews, vector_size=100, window=5, min_count=1, workers=4)
+      7 # Visualize Word Embeddings using t-SNE
+      8 words = list(w2v_model.wv.index_to_key)
+
+NameError: name 'Word2Vec' is not defined
+from gensim.models import Word2Vec
+# Tokenize the reviews (i.e. assuming each review is a string)
+tokenized_reviews = [review.split() for review in df['reviews']]
+
+# Train Word2Vec model
+w2v_model = Word2Vec(sentences=tokenized_reviews, vector_size=100, window=5, min_count=1, workers=4)
+
+# Visualize Word Embeddings using t-SNE
+words = list(w2v_model.wv.index_to_key)
+vectors = [w2v_model.wv[word] for word in words]
+
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors)
+
+tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+tsne_df['word'] = words
+
+# Visualize t-SNE
+plt.figure(figsize=(12, 8))
+sns.scatterplot(data=tsne_df, x='x', y='y', hue='word', palette='viridis', alpha=0.6)
+plt.title('t-SNE Visualization of Word Embeddings')
+plt.show()
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Cell In[13], line 11
+      8 words = list(w2v_model.wv.index_to_key)
+      9 vectors = [w2v_model.wv[word] for word in words]
+---> 11 tsne_model = TSNE(n_components=2, random_state=42)
+     12 tsne_embeddings = tsne_model.fit_transform(vectors)
+     14 tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+
+NameError: name 'TSNE' is not defined
+pip install -U scikit-learn
+Requirement already satisfied: scikit-learn in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (1.3.2)
+Requirement already satisfied: joblib>=1.1.1 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from scikit-learn) (1.3.2)
+Requirement already satisfied: threadpoolctl>=2.0.0 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from scikit-learn) (3.2.0)
+Requirement already satisfied: numpy<2.0,>=1.17.3 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from scikit-learn) (1.26.0)
+Requirement already satisfied: scipy>=1.5.0 in /Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages (from scikit-learn) (1.11.4)
+Note: you may need to restart the kernel to use updated packages.
+import numpy as np
+
+# Convert the list of vectors to a NumPy array
+vectors = np.array([w2v_model.wv[word] for word in words])
+# Visualize Word Embeddings using t-SNE
+words = list(w2v_model.wv.index_to_key)
+vectors = np.array([w2v_model.wv[word] for word in words])
+
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors)
+
+tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+tsne_df['word'] = words
+import numpy as np
+
+# Convert the list of vectors to a NumPy array
+vectors = np.array([w2v_model.wv[word] for word in words])
+# Visualize Word Embeddings using t-SNE
+words = list(w2v_model.wv.index_to_key)
+vectors = np.array([w2v_model.wv[word] for word in words])
+
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors)
+
+tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+tsne_df['word'] = words
+import pandas as pd
+from nltk.sentiment import SentimentIntensityAnalyzer
+import matplotlib.pyplot as plt
+from gensim.models import Word2Vec
+from sklearn.manifold import TSNE
+import seaborn as sns
+import numpy as np
+
+# Tokenize the reviews (assuming each review is a string)
+tokenized_reviews = [review.split() for review in df['reviews']]
+
+# Train Word2Vec model
+w2v_model = Word2Vec(sentences=tokenized_reviews, vector_size=100, window=5, min_count=1, workers=4)
+
+# Visualize Word Embeddings using t-SNE
+words = list(w2v_model.wv.index_to_key)
+vectors = np.array([w2v_model.wv[word] for word in words])
+
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors)
+
+tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+tsne_df['word'] = words
+
+# Visualize t-SNE
+plt.figure(figsize=(12, 8))
+sns.scatterplot(data=tsne_df, x='x', y='y', hue='word', palette='viridis', alpha=0.6)
+plt.title('t-SNE Visualization of Word Embeddings')
+plt.show()
+/Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 10062 (\N{NEGATIVE SQUARED CROSS MARK}) missing from current font.
+  fig.canvas.print_figure(bytes_io, **kw)
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+File ~/anaconda3/lib/python3.10/site-packages/IPython/core/formatters.py:340, in BaseFormatter.__call__(self, obj)
+    338     pass
+    339 else:
+--> 340     return printer(obj)
+    341 # Finally look for special method names
+    342 method = get_real_method(obj, self.print_method)
+
+File ~/anaconda3/lib/python3.10/site-packages/IPython/core/pylabtools.py:152, in print_figure(fig, fmt, bbox_inches, base64, **kwargs)
+    149     from matplotlib.backend_bases import FigureCanvasBase
+    150     FigureCanvasBase(fig)
+--> 152 fig.canvas.print_figure(bytes_io, **kw)
+    153 data = bytes_io.getvalue()
+    154 if fmt == 'svg':
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/backend_bases.py:2164, in FigureCanvasBase.print_figure(self, filename, dpi, facecolor, edgecolor, orientation, format, bbox_inches, pad_inches, bbox_extra_artists, backend, **kwargs)
+   2161     # we do this instead of `self.figure.draw_without_rendering`
+   2162     # so that we can inject the orientation
+   2163     with getattr(renderer, "_draw_disabled", nullcontext)():
+-> 2164         self.figure.draw(renderer)
+   2165 if bbox_inches:
+   2166     if bbox_inches == "tight":
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/artist.py:95, in _finalize_rasterization.<locals>.draw_wrapper(artist, renderer, *args, **kwargs)
+     93 @wraps(draw)
+     94 def draw_wrapper(artist, renderer, *args, **kwargs):
+---> 95     result = draw(artist, renderer, *args, **kwargs)
+     96     if renderer._rasterizing:
+     97         renderer.stop_rasterizing()
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/artist.py:72, in allow_rasterization.<locals>.draw_wrapper(artist, renderer)
+     69     if artist.get_agg_filter() is not None:
+     70         renderer.start_filter()
+---> 72     return draw(artist, renderer)
+     73 finally:
+     74     if artist.get_agg_filter() is not None:
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/figure.py:3154, in Figure.draw(self, renderer)
+   3151         # ValueError can occur when resizing a window.
+   3153 self.patch.draw(renderer)
+-> 3154 mimage._draw_list_compositing_images(
+   3155     renderer, self, artists, self.suppressComposite)
+   3157 for sfig in self.subfigs:
+   3158     sfig.draw(renderer)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/image.py:132, in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
+    130 if not_composite or not has_images:
+    131     for a in artists:
+--> 132         a.draw(renderer)
+    133 else:
+    134     # Composite any adjacent images together
+    135     image_group = []
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/artist.py:72, in allow_rasterization.<locals>.draw_wrapper(artist, renderer)
+     69     if artist.get_agg_filter() is not None:
+     70         renderer.start_filter()
+---> 72     return draw(artist, renderer)
+     73 finally:
+     74     if artist.get_agg_filter() is not None:
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/axes/_base.py:3070, in _AxesBase.draw(self, renderer)
+   3067 if artists_rasterized:
+   3068     _draw_rasterized(self.figure, artists_rasterized, renderer)
+-> 3070 mimage._draw_list_compositing_images(
+   3071     renderer, self, artists, self.figure.suppressComposite)
+   3073 renderer.close_group('axes')
+   3074 self.stale = False
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/image.py:132, in _draw_list_compositing_images(renderer, parent, artists, suppress_composite)
+    130 if not_composite or not has_images:
+    131     for a in artists:
+--> 132         a.draw(renderer)
+    133 else:
+    134     # Composite any adjacent images together
+    135     image_group = []
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/artist.py:72, in allow_rasterization.<locals>.draw_wrapper(artist, renderer)
+     69     if artist.get_agg_filter() is not None:
+     70         renderer.start_filter()
+---> 72     return draw(artist, renderer)
+     73 finally:
+     74     if artist.get_agg_filter() is not None:
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/legend.py:769, in Legend.draw(self, renderer)
+    765     self._legend_box.set_width(self.get_bbox_to_anchor().width - pad)
+    767 # update the location and size of the legend. This needs to
+    768 # be done in any case to clip the figure right.
+--> 769 bbox = self._legend_box.get_window_extent(renderer)
+    770 self.legendPatch.set_bounds(bbox.bounds)
+    771 self.legendPatch.set_mutation_scale(fontsize)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:399, in OffsetBox.get_window_extent(self, renderer)
+    397 if renderer is None:
+    398     renderer = self.figure._get_renderer()
+--> 399 bbox = self.get_bbox(renderer)
+    400 try:  # Some subclasses redefine get_offset to take no args.
+    401     px, py = self.get_offset(bbox, renderer)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:366, in OffsetBox.get_bbox(self, renderer)
+    364 def get_bbox(self, renderer):
+    365     """Return the bbox of the offsetbox, ignoring parent offsets."""
+--> 366     bbox, offsets = self._get_bbox_and_child_offsets(renderer)
+    367     return bbox
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:484, in VPacker._get_bbox_and_child_offsets(self, renderer)
+    481         if isinstance(c, PackerBase) and c.mode == "expand":
+    482             c.set_width(self.width)
+--> 484 bboxes = [c.get_bbox(renderer) for c in self.get_visible_children()]
+    485 (x0, x1), xoffsets = _get_aligned_offsets(
+    486     [bbox.intervalx for bbox in bboxes], self.width, self.align)
+    487 height, yoffsets = _get_packed_offsets(
+    488     [bbox.height for bbox in bboxes], self.height, sep, self.mode)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:484, in <listcomp>(.0)
+    481         if isinstance(c, PackerBase) and c.mode == "expand":
+    482             c.set_width(self.width)
+--> 484 bboxes = [c.get_bbox(renderer) for c in self.get_visible_children()]
+    485 (x0, x1), xoffsets = _get_aligned_offsets(
+    486     [bbox.intervalx for bbox in bboxes], self.width, self.align)
+    487 height, yoffsets = _get_packed_offsets(
+    488     [bbox.height for bbox in bboxes], self.height, sep, self.mode)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:366, in OffsetBox.get_bbox(self, renderer)
+    364 def get_bbox(self, renderer):
+    365     """Return the bbox of the offsetbox, ignoring parent offsets."""
+--> 366     bbox, offsets = self._get_bbox_and_child_offsets(renderer)
+    367     return bbox
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:511, in HPacker._get_bbox_and_child_offsets(self, renderer)
+    508 pad = self.pad * dpicor
+    509 sep = self.sep * dpicor
+--> 511 bboxes = [c.get_bbox(renderer) for c in self.get_visible_children()]
+    512 if not bboxes:
+    513     return Bbox.from_bounds(0, 0, 0, 0).padded(pad), []
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:511, in <listcomp>(.0)
+    508 pad = self.pad * dpicor
+    509 sep = self.sep * dpicor
+--> 511 bboxes = [c.get_bbox(renderer) for c in self.get_visible_children()]
+    512 if not bboxes:
+    513     return Bbox.from_bounds(0, 0, 0, 0).padded(pad), []
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:366, in OffsetBox.get_bbox(self, renderer)
+    364 def get_bbox(self, renderer):
+    365     """Return the bbox of the offsetbox, ignoring parent offsets."""
+--> 366     bbox, offsets = self._get_bbox_and_child_offsets(renderer)
+    367     return bbox
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:484, in VPacker._get_bbox_and_child_offsets(self, renderer)
+    481         if isinstance(c, PackerBase) and c.mode == "expand":
+    482             c.set_width(self.width)
+--> 484 bboxes = [c.get_bbox(renderer) for c in self.get_visible_children()]
+    485 (x0, x1), xoffsets = _get_aligned_offsets(
+    486     [bbox.intervalx for bbox in bboxes], self.width, self.align)
+    487 height, yoffsets = _get_packed_offsets(
+    488     [bbox.height for bbox in bboxes], self.height, sep, self.mode)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:484, in <listcomp>(.0)
+    481         if isinstance(c, PackerBase) and c.mode == "expand":
+    482             c.set_width(self.width)
+--> 484 bboxes = [c.get_bbox(renderer) for c in self.get_visible_children()]
+    485 (x0, x1), xoffsets = _get_aligned_offsets(
+    486     [bbox.intervalx for bbox in bboxes], self.width, self.align)
+    487 height, yoffsets = _get_packed_offsets(
+    488     [bbox.height for bbox in bboxes], self.height, sep, self.mode)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:366, in OffsetBox.get_bbox(self, renderer)
+    364 def get_bbox(self, renderer):
+    365     """Return the bbox of the offsetbox, ignoring parent offsets."""
+--> 366     bbox, offsets = self._get_bbox_and_child_offsets(renderer)
+    367     return bbox
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:511, in HPacker._get_bbox_and_child_offsets(self, renderer)
+    508 pad = self.pad * dpicor
+    509 sep = self.sep * dpicor
+--> 511 bboxes = [c.get_bbox(renderer) for c in self.get_visible_children()]
+    512 if not bboxes:
+    513     return Bbox.from_bounds(0, 0, 0, 0).padded(pad), []
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:511, in <listcomp>(.0)
+    508 pad = self.pad * dpicor
+    509 sep = self.sep * dpicor
+--> 511 bboxes = [c.get_bbox(renderer) for c in self.get_visible_children()]
+    512 if not bboxes:
+    513     return Bbox.from_bounds(0, 0, 0, 0).padded(pad), []
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/offsetbox.py:799, in TextArea.get_bbox(self, renderer)
+    794 def get_bbox(self, renderer):
+    795     _, h_, d_ = renderer.get_text_width_height_descent(
+    796         "lp", self._text._fontproperties,
+    797         ismath="TeX" if self._text.get_usetex() else False)
+--> 799     bbox, info, yd = self._text._get_layout(renderer)
+    800     w, h = bbox.size
+    802     self._baseline_transform.clear()
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/text.py:381, in Text._get_layout(self, renderer)
+    379 clean_line, ismath = self._preprocess_math(line)
+    380 if clean_line:
+--> 381     w, h, d = _get_text_metrics_with_cache(
+    382         renderer, clean_line, self._fontproperties,
+    383         ismath=ismath, dpi=self.figure.dpi)
+    384 else:
+    385     w = h = d = 0
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/text.py:69, in _get_text_metrics_with_cache(renderer, text, fontprop, ismath, dpi)
+     66 """Call ``renderer.get_text_width_height_descent``, caching the results."""
+     67 # Cached based on a copy of fontprop so that later in-place mutations of
+     68 # the passed-in argument do not mess up the cache.
+---> 69 return _get_text_metrics_with_cache_impl(
+     70     weakref.ref(renderer), text, fontprop.copy(), ismath, dpi)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/text.py:77, in _get_text_metrics_with_cache_impl(renderer_ref, text, fontprop, ismath, dpi)
+     73 @functools.lru_cache(4096)
+     74 def _get_text_metrics_with_cache_impl(
+     75         renderer_ref, text, fontprop, ismath, dpi):
+     76     # dpi is unused, but participates in cache invalidation (via the renderer).
+---> 77     return renderer_ref().get_text_width_height_descent(text, fontprop, ismath)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/backends/backend_agg.py:217, in RendererAgg.get_text_width_height_descent(self, s, prop, ismath)
+    213     return super().get_text_width_height_descent(s, prop, ismath)
+    215 if ismath:
+    216     ox, oy, width, height, descent, font_image = \
+--> 217         self.mathtext_parser.parse(s, self.dpi, prop)
+    218     return width, height, descent
+    220 font = self._prepare_font(prop)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/mathtext.py:79, in MathTextParser.parse(self, s, dpi, prop, antialiased)
+     77 prop = prop.copy() if prop is not None else None
+     78 antialiased = mpl._val_or_rc(antialiased, 'text.antialiased')
+---> 79 return self._parse_cached(s, dpi, prop, antialiased)
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/mathtext.py:100, in MathTextParser._parse_cached(self, s, dpi, prop, antialiased)
+     97 if self._parser is None:  # Cache the parser globally.
+     98     self.__class__._parser = _mathtext.Parser()
+--> 100 box = self._parser.parse(s, fontset, fontsize, dpi)
+    101 output = _mathtext.ship(box)
+    102 if self._output_type == "vector":
+
+File ~/anaconda3/lib/python3.10/site-packages/matplotlib/_mathtext.py:2165, in Parser.parse(self, s, fonts_object, fontsize, dpi)
+   2162     result = self._expression.parseString(s)
+   2163 except ParseBaseException as err:
+   2164     # explain becomes a plain method on pyparsing 3 (err.explain(0)).
+-> 2165     raise ValueError("\n" + ParseException.explain(err, 0)) from None
+   2166 self._state_stack = []
+   2167 self._in_subscript_or_superscript = False
+
+ValueError: 
+$$
+^
+ParseException: Expected end of text, found '$'  (at char 0), (line:1, col:1)
+<Figure size 1200x800 with 1 Axes>
+# Word Embedding Exploration
+# Tokenize reviews
+tokenized_reviews = [review.split() for review in df['reviews']]
+
+# Train Word2Vec model
+w2v_model = Word2Vec(sentences=tokenized_reviews, vector_size=100, window=5, min_count=1, workers=4)
+
+# Visualize Word Embeddings using t-SNE
+words = list(w2v_model.wv.index_to_key)
+vectors = [w2v_model.wv[word] for word in words]
+
+# Use t-SNE to reduce dimensions to 2D
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors)
+
+# Create DataFrame for visualization
+tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+tsne_df['word'] = words
+
+# Plot the t-SNE visualization
+plt.figure(figsize=(12, 8))
+plt.scatter(tsne_df['x'], tsne_df['y'], marker='o', s=30, alpha=0.5, edgecolors='w')
+
+# Annotate some points with words for better interpretation
+for i, word in enumerate(tsne_df['word']):
+    if i % 50 == 0:
+        plt.annotate(word, (tsne_df['x'][i], tsne_df['y'][i]))
+
+plt.title('t-SNE Visualization of Word Embeddings')
+plt.show()
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Cell In[24], line 14
+     12 # Use t-SNE to reduce dimensions to 2D
+     13 tsne_model = TSNE(n_components=2, random_state=42)
+---> 14 tsne_embeddings = tsne_model.fit_transform(vectors)
+     16 # Create DataFrame for visualization
+     17 tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+
+File ~/anaconda3/lib/python3.10/site-packages/sklearn/utils/_set_output.py:157, in _wrap_method_output.<locals>.wrapped(self, X, *args, **kwargs)
+    155 @wraps(f)
+    156 def wrapped(self, X, *args, **kwargs):
+--> 157     data_to_wrap = f(self, X, *args, **kwargs)
+    158     if isinstance(data_to_wrap, tuple):
+    159         # only wrap the first output for cross decomposition
+    160         return_tuple = (
+    161             _wrap_data_with_container(method, data_to_wrap[0], X, self),
+    162             *data_to_wrap[1:],
+    163         )
+
+File ~/anaconda3/lib/python3.10/site-packages/sklearn/base.py:1152, in _fit_context.<locals>.decorator.<locals>.wrapper(estimator, *args, **kwargs)
+   1145     estimator._validate_params()
+   1147 with config_context(
+   1148     skip_parameter_validation=(
+   1149         prefer_skip_nested_validation or global_skip_validation
+   1150     )
+   1151 ):
+-> 1152     return fit_method(estimator, *args, **kwargs)
+
+File ~/anaconda3/lib/python3.10/site-packages/sklearn/manifold/_t_sne.py:1110, in TSNE.fit_transform(self, X, y)
+   1085 @_fit_context(
+   1086     # TSNE.metric is not validated yet
+   1087     prefer_skip_nested_validation=False
+   1088 )
+   1089 def fit_transform(self, X, y=None):
+   1090     """Fit X into an embedded space and return that transformed output.
+   1091 
+   1092     Parameters
+   (...)
+   1108         Embedding of the training data in low-dimensional space.
+   1109     """
+-> 1110     self._check_params_vs_input(X)
+   1111     embedding = self._fit(X)
+   1112     self.embedding_ = embedding
+
+File ~/anaconda3/lib/python3.10/site-packages/sklearn/manifold/_t_sne.py:820, in TSNE._check_params_vs_input(self, X)
+    819 def _check_params_vs_input(self, X):
+--> 820     if self.perplexity >= X.shape[0]:
+    821         raise ValueError("perplexity must be less than n_samples")
+
+AttributeError: 'list' object has no attribute 'shape'
+import numpy as np
+
+
+# Convert the list of vectors to a NumPy array
+vectors_array = np.array(vectors)
+
+# Use t-SNE to reduce dimensions to 2D
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors_array)
+import numpy as np
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
+from gensim.models import Word2Vec
+import pandas as pd
+
+
+# Tokenize reviews
+tokenized_reviews = [review.split() for review in df['reviews']]
+
+# Train Word2Vec model
+w2v_model = Word2Vec(sentences=tokenized_reviews, vector_size=100, window=5, min_count=1, workers=4)
+
+# Visualize Word Embeddings using t-SNE
+words = list(w2v_model.wv.index_to_key)
+vectors = [w2v_model.wv[word] for word in words]
+
+# Convert the list of vectors to a NumPy array
+vectors_array = np.array(vectors)
+
+# Use t-SNE to reduce dimensions to 2D
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors_array)
+
+# Create DataFrame for visualization
+tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+tsne_df['word'] = words
+
+# Plot the t-SNE visualization
+plt.figure(figsize=(12, 8))
+plt.scatter(tsne_df['x'], tsne_df['y'], marker='o', s=30, alpha=0.5, edgecolors='w')
+
+# Annotate some points with words for better interpretation
+for i, word in enumerate(tsne_df['word']):
+    if i % 50 == 0:
+        plt.annotate(word, (tsne_df['x'][i], tsne_df['y'][i]))
+
+plt.title('t-SNE Visualization of Word Embeddings')
+plt.show()
+
+#k means clustering and distrubution trends analysis 
+import numpy as np
+from sklearn.manifold import TSNE
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import seaborn as sns
+from gensim.models import Word2Vec
+import pandas as pd
+
+# Assuming you already have a DataFrame 'df' with a 'reviews' column
+
+# Tokenize reviews
+tokenized_reviews = [review.split() for review in df['reviews']]
+
+# Train Word2Vec model
+w2v_model = Word2Vec(sentences=tokenized_reviews, vector_size=100, window=5, min_count=1, workers=4)
+
+# Visualize Word Embeddings using t-SNE
+words = list(w2v_model.wv.index_to_key)
+vectors = [w2v_model.wv[word] for word in words]
+
+# Convert the list of vectors to a NumPy array
+vectors_array = np.array(vectors)
+
+# Use t-SNE to reduce dimensions to 2D
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors_array)
+
+# Create DataFrame for visualization
+tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+tsne_df['word'] = words
+
+# Use K-Means clustering
+num_clusters = 5  # You can adjust this number based on your preference
+kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+tsne_df['cluster'] = kmeans.fit_predict(tsne_embeddings)
+
+# Plot the t-SNE visualization with clusters
+plt.figure(figsize=(12, 8))
+sns.scatterplot(x='x', y='y', hue='cluster', data=tsne_df, palette='viridis', legend='full', alpha=0.7)
+plt.title('t-SNE Visualization with K-Means Clusters')
+plt.show()
+
+# Display distribution trends for each cluster
+plt.figure(figsize=(14, 5))
+sns.countplot(x='cluster', data=tsne_df, palette='viridis')
+plt.title('Distribution of Words in Each Cluster')
+plt.show()
+/Users/ayodejioyesanya/anaconda3/lib/python3.10/site-packages/sklearn/cluster/_kmeans.py:1416: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
+  super()._check_params_vs_input(X, default_n_init=10)
+
+/var/folders/cs/9v4lqf0143s21jfcljftpjk00000gn/T/ipykernel_5439/2943450417.py:46: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.countplot(x='cluster', data=tsne_df, palette='viridis')
+
+import numpy as np
+from sklearn.manifold import TSNE
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import seaborn as sns
+from gensim.models import Word2Vec
+import pandas as pd
+
+# Assuming you already have a DataFrame 'df' with relevant columns, including 'reviews', 'sentiment', and others
+
+# Tokenize reviews
+tokenized_reviews = [review.split() for review in df['reviews']]
+
+
+# Bar chart analysis for sentiment distribution
+plt.figure(figsize=(10, 5))
+sns.countplot(x='sentiment', data=df, palette='coolwarm')
+plt.title('Distribution of Sentiment Scores')
+plt.show()
+
+# Box plot to visualize the distribution of sentiment scores
+plt.figure(figsize=(10, 5))
+sns.boxplot(x='sentiment', y='some_other_variable', data=df, palette='coolwarm')
+plt.title('Box Plot of Sentiment Scores')
+plt.show()
+
+# Scatter plot to visualize relationships
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='x', y='y', hue='sentiment', data=tsne_df, palette='viridis', alpha=0.7)
+plt.title('Scatter Plot of Word Embeddings with Sentiment Colors')
+plt.show()
+
+# Heat map to visualize the correlation matrix
+correlation_matrix = df.corr()
+plt.figure(figsize=(12, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=.5)
+plt.title('Heatmap of Correlation Matrix')
+plt.show()
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+Cell In[29], line 17
+     15 # Bar chart analysis for sentiment distribution
+     16 plt.figure(figsize=(10, 5))
+---> 17 sns.countplot(x='sentiment', data=df, palette='coolwarm')
+     18 plt.title('Distribution of Sentiment Scores')
+     19 plt.show()
+
+File ~/anaconda3/lib/python3.10/site-packages/seaborn/categorical.py:2615, in countplot(data, x, y, hue, order, hue_order, orient, color, palette, saturation, fill, hue_norm, stat, width, dodge, gap, log_scale, native_scale, formatter, legend, ax, **kwargs)
+   2612 elif x is not None and y is not None:
+   2613     raise TypeError("Cannot pass values for both `x` and `y`.")
+-> 2615 p = _CategoricalAggPlotter(
+   2616     data=data,
+   2617     variables=dict(x=x, y=y, hue=hue),
+   2618     order=order,
+   2619     orient=orient,
+   2620     color=color,
+   2621     legend=legend,
+   2622 )
+   2624 if ax is None:
+   2625     ax = plt.gca()
+
+File ~/anaconda3/lib/python3.10/site-packages/seaborn/categorical.py:62, in _CategoricalPlotter.__init__(self, data, variables, order, orient, require_numeric, color, legend)
+     51 def __init__(
+     52     self,
+     53     data=None,
+   (...)
+     59     legend="auto",
+     60 ):
+---> 62     super().__init__(data=data, variables=variables)
+     64     # This method takes care of some bookkeeping that is necessary because the
+     65     # original categorical plots (prior to the 2021 refactor) had some rules that
+     66     # don't fit exactly into VectorPlotter logic. It may be wise to have a second
+   (...)
+     71     # default VectorPlotter rules. If we do decide to make orient part of the
+     72     # _base variable assignment, we'll want to figure out how to express that.
+     73     if self.input_format == "wide" and orient in ["h", "y"]:
+
+File ~/anaconda3/lib/python3.10/site-packages/seaborn/_base.py:634, in VectorPlotter.__init__(self, data, variables)
+    629 # var_ordered is relevant only for categorical axis variables, and may
+    630 # be better handled by an internal axis information object that tracks
+    631 # such information and is set up by the scale_* methods. The analogous
+    632 # information for numeric axes would be information about log scales.
+    633 self._var_ordered = {"x": False, "y": False}  # alt., used DefaultDict
+--> 634 self.assign_variables(data, variables)
+    636 # TODO Lots of tests assume that these are called to initialize the
+    637 # mappings to default values on class initialization. I'd prefer to
+    638 # move away from that and only have a mapping when explicitly called.
+    639 for var in ["hue", "size", "style"]:
+
+File ~/anaconda3/lib/python3.10/site-packages/seaborn/_base.py:679, in VectorPlotter.assign_variables(self, data, variables)
+    674 else:
+    675     # When dealing with long-form input, use the newer PlotData
+    676     # object (internal but introduced for the objects interface)
+    677     # to centralize / standardize data consumption logic.
+    678     self.input_format = "long"
+--> 679     plot_data = PlotData(data, variables)
+    680     frame = plot_data.frame
+    681     names = plot_data.names
+
+File ~/anaconda3/lib/python3.10/site-packages/seaborn/_core/data.py:58, in PlotData.__init__(self, data, variables)
+     51 def __init__(
+     52     self,
+     53     data: DataSource,
+     54     variables: dict[str, VariableSpec],
+     55 ):
+     57     data = handle_data_source(data)
+---> 58     frame, names, ids = self._assign_variables(data, variables)
+     60     self.frame = frame
+     61     self.names = names
+
+File ~/anaconda3/lib/python3.10/site-packages/seaborn/_core/data.py:232, in PlotData._assign_variables(self, data, variables)
+    230     else:
+    231         err += "An entry with this name does not appear in `data`."
+--> 232     raise ValueError(err)
+    234 else:
+    235 
+    236     # Otherwise, assume the value somehow represents data
+    237 
+    238     # Ignore empty data structures
+    239     if isinstance(val, Sized) and len(val) == 0:
+
+ValueError: Could not interpret value `sentiment` for `x`. An entry with this name does not appear in `data`.
+<Figure size 1000x500 with 0 Axes>
+# Display column names
+print(df.columns)
+
+# Display the first few rows of the DataFrame
+print(df.head())
+Index(['Unnamed: 0', 'reviews', 'sentiment_score'], dtype='object')
+   Unnamed: 0                                            reviews  \
+0           0   |  4 Hours before takeoff we received a Mail ...   
+1           1   |  I recently had a delay on British Airways ...   
+2           2  Not Verified |  Boarded on time, but it took a...   
+3           3   |  5 days before the flight, we were advised ...   
+4           4  Not Verified |  \r\nWe traveled to Lisbon for ...   
+
+   sentiment_score  
+0          -0.9342  
+1          -0.8500  
+2           0.5927  
+3          -0.8327  
+4           0.8392  
+import numpy as np
+
+# Define a threshold for positive and negative sentiment
+positive_threshold = 0.1
+negative_threshold = -0.1
+
+# Create a new column 'sentiment' based on the sentiment scores
+df['sentiment'] = np.where(df['sentiment_score'] > positive_threshold, 'positive',
+                           np.where(df['sentiment_score'] < negative_threshold, 'negative', 'neutral'))
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.manifold import TSNE
+from gensim.models import Word2Vec
+
+# Assuming you have already loaded the data into df
+
+# Create a new column 'sentiment' based on the sentiment scores
+positive_threshold = 0.1
+negative_threshold = -0.1
+df['sentiment'] = np.where(df['sentiment_score'] > positive_threshold, 'positive',
+                           np.where(df['sentiment_score'] < negative_threshold, 'negative', 'neutral'))
+
+# Bar chart analysis for sentiment distribution
+plt.figure(figsize=(10, 5))
+sns.countplot(x='sentiment', data=df, palette='coolwarm')
+plt.title('Distribution of Sentiment Scores')
+plt.show()
+
+# Word Embedding Exploration
+# Tokenize reviews
+tokenized_reviews = [review.split() for review in df['reviews']]
+
+# Train Word2Vec model
+w2v_model = Word2Vec(sentences=tokenized_reviews, vector_size=100, window=5, min_count=1, workers=4)
+
+# Visualize Word Embeddings using t-SNE
+words = list(w2v_model.wv.index_to_key)
+vectors = [w2v_model.wv[word] for word in words]
+
+# Use t-SNE to reduce dimensions to 2D
+tsne_model = TSNE(n_components=2, random_state=42)
+tsne_embeddings = tsne_model.fit_transform(vectors)
+
+# Create DataFrame for visualization
+tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+tsne_df['word'] = words
+tsne_df['sentiment'] = df['sentiment']  # Add sentiment information
+
+# Scatter plot with sentiment color coding
+plt.figure(figsize=(12, 8))
+sns.scatterplot(data=tsne_df, x='x', y='y', hue='sentiment', palette='coolwarm', alpha=0.7)
+plt.title('t-SNE Visualization of Word Embeddings with Sentiment Color Coding')
+plt.show()
+
+# Box plot for sentiment scores
+plt.figure(figsize=(10, 5))
+sns.boxplot(x='sentiment', y='sentiment_score', data=df, palette='coolwarm')
+plt.title('Box Plot of Sentiment Scores')
+plt.show()
+
+# Heat map for sentiment scores
+plt.figure(figsize=(12, 8))
+sns.heatmap(df[['sentiment_score']].transpose(), cmap='coolwarm', annot=True, fmt=".2f")
+plt.title('Heat Map of Sentiment Scores')
+plt.show()
+/var/folders/cs/9v4lqf0143s21jfcljftpjk00000gn/T/ipykernel_5439/2646009792.py:18: FutureWarning: 
+
+Passing `palette` without assigning `hue` is deprecated and will be removed in v0.14.0. Assign the `x` variable to `hue` and set `legend=False` for the same effect.
+
+  sns.countplot(x='sentiment', data=df, palette='coolwarm')
+
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Cell In[32], line 35
+     33 # Use t-SNE to reduce dimensions to 2D
+     34 tsne_model = TSNE(n_components=2, random_state=42)
+---> 35 tsne_embeddings = tsne_model.fit_transform(vectors)
+     37 # Create DataFrame for visualization
+     38 tsne_df = pd.DataFrame(tsne_embeddings, columns=['x', 'y'])
+
+File ~/anaconda3/lib/python3.10/site-packages/sklearn/utils/_set_output.py:157, in _wrap_method_output.<locals>.wrapped(self, X, *args, **kwargs)
+    155 @wraps(f)
+    156 def wrapped(self, X, *args, **kwargs):
+--> 157     data_to_wrap = f(self, X, *args, **kwargs)
+    158     if isinstance(data_to_wrap, tuple):
+    159         # only wrap the first output for cross decomposition
+    160         return_tuple = (
+    161             _wrap_data_with_container(method, data_to_wrap[0], X, self),
+    162             *data_to_wrap[1:],
+    163         )
+
+File ~/anaconda3/lib/python3.10/site-packages/sklearn/base.py:1152, in _fit_context.<locals>.decorator.<locals>.wrapper(estimator, *args, **kwargs)
+   1145     estimator._validate_params()
+   1147 with config_context(
+   1148     skip_parameter_validation=(
+   1149         prefer_skip_nested_validation or global_skip_validation
+   1150     )
+   1151 ):
+-> 1152     return fit_method(estimator, *args, **kwargs)
+
+File ~/anaconda3/lib/python3.10/site-packages/sklearn/manifold/_t_sne.py:1110, in TSNE.fit_transform(self, X, y)
+   1085 @_fit_context(
+   1086     # TSNE.metric is not validated yet
+   1087     prefer_skip_nested_validation=False
+   1088 )
+   1089 def fit_transform(self, X, y=None):
+   1090     """Fit X into an embedded space and return that transformed output.
+   1091 
+   1092     Parameters
+   (...)
+   1108         Embedding of the training data in low-dimensional space.
+   1109     """
+-> 1110     self._check_params_vs_input(X)
+   1111     embedding = self._fit(X)
+   1112     self.embedding_ = embedding
+
+File ~/anaconda3/lib/python3.10/site-packages/sklearn/manifold/_t_sne.py:820, in TSNE._check_params_vs_input(self, X)
+    819 def _check_params_vs_input(self, X):
+--> 820     if self.perplexity >= X.shape[0]:
+    821         raise ValueError("perplexity must be less than n_samples")
+
+AttributeError: 'list' object has no attribute 'shape'
+ 
